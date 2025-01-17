@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import './App.css';
 
 export function App() {
 	const [message, setMessage] = React.useState<string>('');
