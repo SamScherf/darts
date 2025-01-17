@@ -2,18 +2,38 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Card, InputGroup, Tooltip } from "@blueprintjs/core";
 import './App.css';
+import { getToaster } from './toaster.ts';
+
+const BACKEND_URL = "http://localhost:5000"
 
 export function App() {
-	const [message, setMessage] = React.useState<string>('');
+	const [password, setPassword] = React.useState<string>('');
 	const [showPassword, setShowPassword] = React.useState<Boolean>(false);
+	
 
 	const handleLockClick = React.useCallback(() => setShowPassword(currentVal => !currentVal), [])
+	const handleLogin = React.useCallback(async () => {
+		const toaster = getToaster();
+		try {
+			await post("/validate-password", {password})
+		} catch(e) {
+			if (e.response) {
+				const statusCode = e.response.status;
+				if (statusCode === 401) {
+					toaster.show({intent: "danger", message: "Invalid password" });
+				} else if (statusCode === 429) {
+					toaster.show({intent: "danger", message: "Too many attempts, please wait 1 minute" });
+				}
+			} else {
+				toaster.show({intent: "danger", message: "Error" });
+			}
+			console.warn(e);
+			return;
+		}
 
-	React.useEffect(() => {
-		axios.get('http://localhost:5000')
-		.then(response => setMessage(response.data))
-		.catch(error => console.error('Error fetching data', error));
-	}, []);
+		toaster.show({intent: "success", message: "Password accepted" });
+	}, [password])
+
 
 	const lockButton = (
            <Tooltip content={`${showPassword ? "Hide" : "Show"} Password`}>
@@ -29,15 +49,21 @@ export function App() {
 	return (
 		<div className="homepage">
 			<Card className="login-container">
-				<div>{message}</div>
 				<InputGroup
 					type={showPassword ? "text" : "password"}
 					placeholder="Enter your password..."
 					rightElement={lockButton}
 					className="password-field"
+					value={password}
+					onValueChange={setPassword}
 				/>
-				<Button text="Login" intent="success" fill={true} />
+				<Button text="Login" intent="success" fill={true} onClick={handleLogin}/>
 			</Card>
 		</div>
 	);
+}
+
+
+async function post(relativeUrl: string, payload?) {
+	return axios.post(BACKEND_URL + relativeUrl, payload)
 }
