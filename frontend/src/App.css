@@ -1,0 +1,13 @@
+.homepage {
+    display: flex;
+}
+
+.login-container {
+    padding: 12px;
+    margin: 300px auto;
+    max-width: 1200px;
+}
+
+.password-field {
+    margin: 6px 0;
+}
