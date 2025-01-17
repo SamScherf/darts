@@ -1,9 +1,8 @@
 import React from 'react';
-import logo from './logo.svg';
 import axios from 'axios';
 import './App.css';
 
-function App() {
+export function App() {
 	const [message, setMessage] = React.useState<string>('');
 
 	React.useEffect(() => {
@@ -18,5 +17,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;
