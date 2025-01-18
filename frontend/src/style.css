@@ -1,4 +1,10 @@
-.homepage {
+/* Home page */
+.home {
+    display: flex;
+}
+
+/* Login page */
+.login {
     display: flex;
 }
 
