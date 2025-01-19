@@ -1,9 +1,13 @@
 {
-"scripts": {
-  "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-  "start:backend": "cd backend && npm start",
-  "start:frontend": "cd frontend && npm start"
-},
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "devDependencies": {
     "concurrently": "^9.1.2"
   }
