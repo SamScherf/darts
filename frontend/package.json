@@ -5,6 +5,8 @@
   "dependencies": {
     "@blueprintjs/core": "^5.16.4",
     "@popperjs/core": "^2.11.8",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^19.0.3",
     "axios": "^1.7.9",
     "blueprintjs": "^0.0.8",
     "classnames": "^2.5.1",

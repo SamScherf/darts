@@ -1,6 +1,6 @@
 import { Button, HTMLSelect } from '@blueprintjs/core';
 import React from 'react';
-import { getToaster } from '../util/toaster.ts';
+import { getToaster } from '../util/toaster';
 
 interface GameConfigProps {
     startGame: () => void;
@@ -14,8 +14,8 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
     const [playerOne, setPlayerOne] = React.useState<string>(players[0]);
     const [playerTwo, setPlayerTwo] = React.useState<string>(players[0]);
 
-    const handlePlayerOneSelect = React.useCallback((event) => setPlayerOne(event.currentTarget.value), [setPlayerOne]);
-    const handlePlayerTwoSelect = React.useCallback((event) => setPlayerTwo(event.currentTarget.value), [setPlayerTwo]);
+    const handlePlayerOneSelect = React.useCallback((event: any) => setPlayerOne(event.currentTarget.value), [setPlayerOne]);
+    const handlePlayerTwoSelect = React.useCallback((event: any) => setPlayerTwo(event.currentTarget.value), [setPlayerTwo]);
     const handleStart = React.useCallback(async () => {
         if (playerOne === playerTwo) {
             const toaster = await getToaster();

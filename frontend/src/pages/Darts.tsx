@@ -1,6 +1,6 @@
 import React from 'react';
-import { GameConfig } from '../componets/GameConfig.tsx';
-import { DartGameTracker } from '../componets/DartGameTracker.tsx';
+import { GameConfig } from '../componets/GameConfig';
+import { DartGameTracker } from '../componets/DartGameTracker';
 
 export const Darts: React.FC = () => {
     const [ready, setReady] = React.useState<Boolean>(false);

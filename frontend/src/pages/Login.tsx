@@ -1,7 +1,7 @@
 import { Button, Card, InputGroup, Tooltip } from '@blueprintjs/core';
 import React from 'react';
-import { getToaster } from '../util/toaster.ts';
-import { post } from '../util/backend.ts';
+import { getToaster } from '../util/toaster';
+import { post } from '../util/backend';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
@@ -17,7 +17,7 @@ export const Login: React.FC<LoginProps> = ({ setSecret }) => {
 		const toaster = await getToaster();
 		try {
 			await post("/validate-password", {password})
-		} catch(e) {
+		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;
 				if (statusCode === 401) {

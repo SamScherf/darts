@@ -1,6 +1,6 @@
 import { Button, Card } from '@blueprintjs/core';
 import React from 'react';
-import { Modifier, Throw } from '../util/Throw.ts';
+import { Modifier, Throw } from '../util/Throw';
 
 const STARTING_SCORE = 501;
 

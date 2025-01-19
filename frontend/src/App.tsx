@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './style.css';
-import { Login } from './pages/Login.tsx';
-import { Home } from './pages/Home.tsx';
-import { Stats } from './pages/Stats.tsx';
-import { Darts } from './pages/Darts.tsx';
+import { Login } from './pages/Login';
+import { Home } from './pages/Home';
+import { Stats } from './pages/Stats';
+import { Darts } from './pages/Darts';
 
-export function App() {
+export const App: React.FC = () => {
 	const [secret, setSecret] = React.useState<string | undefined>(undefined)
 
 	const handleLogout = React.useCallback(() => setSecret(undefined), [setSecret])
