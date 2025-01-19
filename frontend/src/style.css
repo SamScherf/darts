@@ -47,3 +47,100 @@
 .password-field {
     margin: 6px 0;
 }
+
+/* Play page */
+
+.play {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.scores {
+    width: 100%;
+    align-self: center;
+
+    /* Score cards */
+    > div {
+        margin: 12px 0;
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        padding: 10px 0;
+    }
+}
+
+.controls {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .play {
+        flex-direction: column;
+    }
+}
+
+.pick-players {
+    display: flex;
+    flex-direction: column;
+    margin: 30vh 3vw;
+}
+
+.player-selection-container {
+    display: flex;
+    flex-direction: row;
+
+    > div {
+        margin: 8px;
+    }
+}
+
+.instructions {
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.score-container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+
+    > h2 {
+        font-size: 32px;
+        margin: 0;
+        text-align: center;
+    }
+
+    > p {
+        text-align: center;
+    }
+}
+
+.throws {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+
+    /* Individual throw value */
+    > div {
+        margin: 10px;
+        background-color: grey;
+        color: white;
+        text-align: center;
+        aspect-ratio: 1 / 1;
+        display: grid;
+        align-items: center;
+    }
+}
+
+.round-total {
+    text-align: center;
+}
+
+.stats-col {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    margin: auto;
+}
