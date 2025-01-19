@@ -70,15 +70,23 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                 ))}
                 <Button key={21} text={"25"} onClick={createHandleNewThrow(25)} disabled={selectedModifier != null}/>
                 <Button key={22} text={"50"} onClick={createHandleNewThrow(50)} disabled={selectedModifier != null}/>
-                <Button key={23} text={"2x"} onClick={createHandleModifierSelected(Modifier.double)} intent="success" />
-                <Button key={24} text={"3x"} onClick={createHandleModifierSelected(Modifier.treble)} intent="success" />
-                <Button key={25} text={"Board-0"} onClick={createHandleNewThrow(0, Modifier.board)} intent="warning" />
-                <Button key={26} text={"Wood-0"} onClick={createHandleNewThrow(0, Modifier.wood)} intent="warning" />
-                <Button key={27} text={"Wall-0"} onClick={createHandleNewThrow(0, Modifier.wall)} intent="warning" />
-                <Button key={28} text={"Floor-0"} onClick={createHandleNewThrow(0, Modifier.floor)} intent="warning" />
-                <Button key={29} text={"Inner-Circle"} onClick={createHandleModifierSelected(Modifier.inner)} intent="primary" />
-                <Button key={30} text={"Outer-Circle"} onClick={createHandleModifierSelected(Modifier.outer)} intent="primary" />
-                <Button key={31} icon="undo" onClick={createHandleNewThrow(25)} intent="danger" />
+                <Button
+                    key={23}
+                    text={"2x"}
+                    onClick={createHandleModifierSelected(Modifier.double)}
+                    intent="success"
+                    disabled={selectedModifier != null && selectedModifier !== Modifier.double}
+                />
+                <Button key={24} text={"3x"} onClick={createHandleModifierSelected(Modifier.treble)}
+                        intent="success" disabled={selectedModifier != null && selectedModifier !== Modifier.treble} />
+                <Button key={25} text={"Board-0"} onClick={createHandleNewThrow(0, Modifier.board)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={26} text={"Wood-0"} onClick={createHandleNewThrow(0, Modifier.wood)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={27} text={"Wall-0"} onClick={createHandleNewThrow(0, Modifier.wall)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={28} text={"Floor-0"} onClick={createHandleNewThrow(0, Modifier.floor)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={29} text={"Inner-Circle"} onClick={createHandleModifierSelected(Modifier.inner)}
+                        intent="primary" disabled={selectedModifier != null && selectedModifier !== Modifier.inner} />
+                <Button key={30} text={"Outer-Circle"} onClick={createHandleModifierSelected(Modifier.outer)} intent="primary" disabled={selectedModifier != null && selectedModifier !== Modifier.outer} />
+                <Button key={31} icon="undo" onClick={createHandleNewThrow(25)} intent="danger" disabled={selectedModifier != null && selectedModifier != null} />
             </div>
         </div>
     ) 

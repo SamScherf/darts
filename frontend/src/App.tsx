@@ -4,7 +4,7 @@ import './style.css';
 import { Login } from './pages/Login.tsx';
 import { Home } from './pages/Home.tsx';
 import { Stats } from './pages/Stats.tsx';
-import { Play } from './pages/Play.tsx';
+import { Darts } from './pages/Darts.tsx';
 
 export function App() {
 	const [secret, setSecret] = React.useState<string | undefined>(undefined)
@@ -16,8 +16,8 @@ export function App() {
       <Routes>
         <Route path="/login" element={<Login setSecret={setSecret} />} />
         <Route path="/" element={secret != null ? <Home onLogout={handleLogout} /> : <Navigate to="/login" />} />
-        <Route path="/Play" element={secret != null ? <Play /> : <Navigate to="/login" />} />
-        <Route path="/Stats" element={secret != null ? <Stats /> : <Navigate to="/login" />} />
+        <Route path="/darts" element={secret != null ? <Darts /> : <Navigate to="/login" />} />
+        <Route path="/stats" element={secret != null ? <Stats /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
 	);

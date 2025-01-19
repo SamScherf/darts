@@ -1,6 +1,6 @@
-# darts
+# TRUST
 
-Welcome to my darts app. It's quick and dirty because I built it in a weekend. Pls don't judge
+Welcome to TRUST!. It's quick and dirty app for Tracking Really Useless "Stuff" Thoroughly...get it?
 
 ## Install Instructions
 Add a .env file to the backend folder with MASTERPASSWORD=...
