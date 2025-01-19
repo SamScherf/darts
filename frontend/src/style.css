@@ -52,15 +52,15 @@
 
 .play {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     gap: 20px;
-    padding: 20px;
+    height: 100vh;
 }
 
 .scores {
     width: 100%;
     align-self: center;
+    padding: 20px;
 
     /* Score cards */
     > div {
@@ -73,11 +73,32 @@
 
 .controls {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 6px;
+    background-color: grey;
+    padding: 6px;
+    margin: auto 0;
 }
+
+.controls > :nth-child(n + 25) {
+    grid-column: span 2;
+  }
+
+.controls > :nth-child(n + 31) {
+    grid-column: span 6;
+  }
+
+
 
 @media (max-width: 768px) {
     .play {
         flex-direction: column;
+    }
+
+    .controls {
+        margin-top: auto;
+        margin-bottom: 0;
     }
 }
 

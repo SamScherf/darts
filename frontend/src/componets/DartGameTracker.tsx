@@ -1,6 +1,6 @@
 import { Button, Card } from '@blueprintjs/core';
 import React from 'react';
-import { Throw } from '../util/Throw.ts';
+import { Modifier, Throw } from '../util/Throw.ts';
 
 const STARTING_SCORE = 501;
 
@@ -10,6 +10,7 @@ interface DartGameTrackerProps {
 }
 export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo}) => {
     const [playerOneThrows, setPlayerOneThrows] = React.useState<Throw[]>([])
+    const [selectedModifier, setSelectedModifier] = React.useState<Modifier | undefined>(undefined)
 
     const playerOneScore = React.useMemo(() => {
         if (playerOneThrows.length === 0) {
@@ -20,9 +21,13 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
 
     }, [playerOneThrows])
 
-    const createHandleNewThrow = React.useCallback((value: number) => () => {
-        setPlayerOneThrows(oldThrows => [...oldThrows, {value}])
-    }, [setPlayerOneThrows])
+    const createHandleModifierSelected = React.useCallback((modifier: Modifier) =>
+        () => setSelectedModifier(selectedModifier === modifier ? undefined : modifier)
+    , [setSelectedModifier, selectedModifier])
+    const createHandleNewThrow = React.useCallback((value: number, modifier?: Modifier) => () => {
+        setPlayerOneThrows(oldThrows => [...oldThrows, {value, modifier: modifier ?? selectedModifier}])
+        setSelectedModifier(undefined);
+    }, [setPlayerOneThrows, setSelectedModifier, selectedModifier])
     return (
         <div className="play">
             <div className="scores">
@@ -60,7 +65,20 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                 </Card>
             </div>
             <div className="controls">
-                <Button text="1" onClick={createHandleNewThrow(1)} />
+                {Array.from({ length: 20 }, (_, index) => (
+                    <Button key={index + 1} text={`${index + 1}`} onClick={createHandleNewThrow(index + 1)} />
+                ))}
+                <Button key={21} text={"25"} onClick={createHandleNewThrow(25)} disabled={selectedModifier != null}/>
+                <Button key={22} text={"50"} onClick={createHandleNewThrow(50)} disabled={selectedModifier != null}/>
+                <Button key={23} text={"2x"} onClick={createHandleModifierSelected(Modifier.double)} intent="success" />
+                <Button key={24} text={"3x"} onClick={createHandleModifierSelected(Modifier.treble)} intent="success" />
+                <Button key={25} text={"Board-0"} onClick={createHandleNewThrow(0, Modifier.board)} intent="warning" />
+                <Button key={26} text={"Wood-0"} onClick={createHandleNewThrow(0, Modifier.wood)} intent="warning" />
+                <Button key={27} text={"Wall-0"} onClick={createHandleNewThrow(0, Modifier.wall)} intent="warning" />
+                <Button key={28} text={"Floor-0"} onClick={createHandleNewThrow(0, Modifier.floor)} intent="warning" />
+                <Button key={29} text={"Inner-Circle"} onClick={createHandleModifierSelected(Modifier.inner)} intent="primary" />
+                <Button key={30} text={"Outer-Circle"} onClick={createHandleModifierSelected(Modifier.outer)} intent="primary" />
+                <Button key={31} icon="undo" onClick={createHandleNewThrow(25)} intent="danger" />
             </div>
         </div>
     ) 

@@ -1,5 +1,16 @@
 export interface Throw {
     value: number;
-    modifier?: string
+    modifier?: Modifier
+}
+
+export enum Modifier {
+    double,
+    treble,
+    inner,
+    outer,
+    floor,
+    wood,
+    board,
+    wall
 }
 
