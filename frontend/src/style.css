@@ -1,6 +1,21 @@
 /* Home page */
 .home {
     display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-container {
+    max-width: 500px;
+    margin: 5vh;
+    background: #c4c4c4;
+    padding: 40px;
+    border-radius: 80px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dartboard {
+    width: 100%;
 }
 
 /* Login page */
