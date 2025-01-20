@@ -10,43 +10,109 @@ interface DartGameTrackerProps {
     playerTwo: string;
 }
 export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo}) => {
+    const [throwIndex, setThrowIndex] = React.useState<number>(0);
     const [playerOneThrows, setPlayerOneThrows] = React.useState<Throw[]>([])
-    const [selectedModifier, setSelectedModifier] = React.useState<Modifier | undefined>(undefined)
+    const [playerTwoThrows, setPlayerTwoThrows] = React.useState<Throw[]>([])
 
-    const playerOneScore = React.useMemo(() => {
-        if (playerOneThrows.length === 0) {
-            return STARTING_SCORE;
-        }
-
-        return STARTING_SCORE - 1;
-
+    const playerOneCurrentScore = React.useMemo(() => {
+        const lastThrow = playerOneThrows[playerOneThrows.length - 1];
+        const lastScore = lastThrow?.startingScore ?? STARTING_SCORE;
+        const lastValue = lastThrow?.value ?? 0;
+        return lastScore - lastValue;
     }, [playerOneThrows])
+    const playerTwoCurrentScore = React.useMemo(() => {
+        const lastThrow = playerTwoThrows[playerTwoThrows.length - 1];
+        const lastScore = lastThrow?.startingScore ?? STARTING_SCORE;
+        const lastValue = lastThrow?.value ?? 0;
+        return lastScore - lastValue;
+    }, [playerTwoThrows])
+
+    const thingOne = React.useMemo(() => {
+        const roundIndex = throwIndex % 6;
+        if (roundIndex < 1) {
+            return undefined;
+        } else {
+            const offSet = roundIndex < 3 ? roundIndex : 3;
+            return playerOneThrows[playerOneThrows.length - offSet].value;
+        }
+    }, [throwIndex, playerOneThrows])
+    const thingTwo = React.useMemo(() => {
+        const roundIndex = throwIndex % 6;
+        if (roundIndex < 2) {
+            return undefined;
+        } else {
+            const offSet = roundIndex < 3 ? roundIndex : 3;
+            return playerOneThrows[playerOneThrows.length - offSet + 1].value;
+        }
+    }, [throwIndex, playerOneThrows])
+    const thingThree = React.useMemo(() => {
+        const roundIndex = throwIndex % 6;
+        if (roundIndex < 3) {
+            return undefined;
+        } else {
+            const offSet = roundIndex < 3 ? roundIndex : 3;
+            return playerOneThrows[playerOneThrows.length - offSet + 2].value;
+        }
+    }, [throwIndex, playerOneThrows])
+
+    const [selectedModifier, setSelectedModifier] = React.useState<Modifier | undefined>(undefined)
 
     const createHandleModifierSelected = React.useCallback((modifier: Modifier) =>
         () => setSelectedModifier(selectedModifier === modifier ? undefined : modifier)
     , [setSelectedModifier, selectedModifier])
-    const createHandleNewThrow = React.useCallback((value: number, modifier?: Modifier) => () => {
-        setPlayerOneThrows(oldThrows => [...oldThrows, {value, modifier: modifier ?? selectedModifier}])
+    const createHandleNewThrow = React.useCallback((hit: number, modifier?: Modifier) => () => {
+        // Calculate value of throw
+        let value: number;
+        if (selectedModifier === Modifier.double) {
+            value = hit*2;
+        } else if (selectedModifier === Modifier.treble) {
+            value = hit*3
+        } else {
+            value = hit;
+        }
+
+        // Set based on who threw
+        if (throwIndex % 6 < 3) {
+            setPlayerOneThrows(oldThrows => {
+                    const startingScore = oldThrows.length === 0
+                        ? STARTING_SCORE
+                        : oldThrows[oldThrows.length - 1].startingScore - oldThrows[oldThrows.length - 1].value;
+                    const newThrow = {hit: value, modifier: modifier ?? selectedModifier, startingScore, value};
+                    return [...oldThrows, newThrow];
+                }
+            )
+        } else {
+            setPlayerTwoThrows(oldThrows => {
+                    const startingScore = oldThrows.length === 0
+                        ? STARTING_SCORE
+                        : oldThrows[oldThrows.length - 1].startingScore - oldThrows[oldThrows.length - 1].value;
+                    const newThrow = {hit: value, modifier: modifier ?? selectedModifier, startingScore, value};
+                    return [...oldThrows, newThrow];
+                }
+            )
+        }
+
+        setThrowIndex(currentThrowIndex => currentThrowIndex + 1);
         setSelectedModifier(undefined);
-    }, [setPlayerOneThrows, setSelectedModifier, selectedModifier])
+    }, [setPlayerOneThrows, setSelectedModifier, selectedModifier, throwIndex])
     return (
         <div className={styles.play}>
             <div className={styles.scoreHalf}>
                 <Card elevation={2}>
                     <div className={styles.scoreContainer}>
-                        <h2>{playerOneScore}</h2>
+                        <h2>{playerOneCurrentScore}</h2>
                         <p>{playerOne}</p>
                     </div>
                     <div>
                         <div className={styles.throws}>
                             <div>
-                                1
+                                {thingOne}
                             </div>
                             <div>
-                                2
+                                {thingTwo}
                             </div>
                             <div>
-                                3
+                                {thingThree}
                             </div>
                         </div>
                         <div className={styles.roundTotal}>
@@ -60,7 +126,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                 </Card>
                 <Card elevation={2}>
                     <div className={styles.scoreContainer}>
-                        <h2>501</h2>
+                        <h2>{playerTwoCurrentScore}</h2>
                         <p>{playerTwo}</p>
                     </div>
                 </Card>

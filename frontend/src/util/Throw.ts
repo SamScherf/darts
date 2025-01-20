@@ -1,6 +1,8 @@
 export interface Throw {
     value: number;
-    modifier?: Modifier
+    hit: number;
+    modifier?: Modifier;
+    startingScore: number;
 }
 
 export enum Modifier {
