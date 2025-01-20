@@ -137,6 +137,8 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
         setSelectedModifier(undefined);
     }, [setThrows, setSelectedModifier, selectedModifier, players]);
 
+    const handleUndo = React.useCallback(() => setThrows(oldThrows => oldThrows.slice(0, -1)), [setThrows])
+
     return (
         <div className={styles.play}>
             <div className={styles.scoreHalf}>
@@ -219,7 +221,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                 <Button key={29} text={"Inner-Circle"} onClick={createHandleModifierSelected(Modifier.inner)}
                         intent="primary" disabled={selectedModifier != null && selectedModifier !== Modifier.inner} />
                 <Button key={30} text={"Outer-Circle"} onClick={createHandleModifierSelected(Modifier.outer)} intent="primary" disabled={selectedModifier != null && selectedModifier !== Modifier.outer} />
-                <Button key={31} icon="undo" onClick={createHandleNewThrow(25)} intent="danger" disabled={selectedModifier != null && selectedModifier != null} />
+                <Button key={31} icon="undo" onClick={handleUndo} intent="danger" disabled={selectedModifier != null && selectedModifier != null} />
             </div>
         </div>
     ) 
