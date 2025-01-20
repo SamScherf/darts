@@ -1,7 +1,8 @@
-import { Button, Card } from '@blueprintjs/core';
+import { Button, Card, Dialog, DialogBody } from '@blueprintjs/core';
 import React from 'react';
 import { Modifier, Throw } from '../util/Throw';
 import styles from './DartGameTracker.module.css'
+import { useNavigate } from 'react-router-dom';
 
 const STARTING_SCORE = 501;
 
@@ -10,6 +11,8 @@ interface DartGameTrackerProps {
     playerTwo: string;
 }
 export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo}) => {
+	const navigate = useNavigate();
+
     const [throws, setThrows] = React.useState<Throw[]>([]);
     const [selectedModifier, setSelectedModifier] = React.useState<Modifier | undefined>(undefined)
 
@@ -135,8 +138,17 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
 
     const handleUndo = React.useCallback(() => setThrows(oldThrows => oldThrows.slice(0, -1)), [setThrows])
 
+    const handleDiscardGame = React.useCallback(() => navigate("/"), [navigate])
+
     return (
         <div className={styles.play}>
+            <Dialog isOpen={scoreByPlayer.some(score => score === 0)} >
+                <DialogBody className={styles.winningDialog}>
+                    {players[scoreByPlayer.findIndex(score => score === 0)]} won
+                    <Button text="Save Game" intent="success" />
+                    <Button text="Discard Game" intent="danger" onClick={handleDiscardGame}/>
+                </DialogBody>
+            </Dialog>
             <div className={styles.scoreHalf}>
                 <Card elevation={2}>
                     <div className={styles.leftColumn}>

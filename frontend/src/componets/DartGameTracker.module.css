@@ -112,3 +112,13 @@
         margin: 0;
     }
 }
+
+.winningDialog {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    > button {
+        margin-top: 12px;
+    }
+}
