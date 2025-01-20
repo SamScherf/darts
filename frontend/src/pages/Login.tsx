@@ -3,6 +3,7 @@ import React from 'react';
 import { getToaster } from '../util/toaster';
 import { post } from '../util/backend';
 import { useNavigate } from 'react-router-dom';
+import styles from './Login.module.css'
 
 interface LoginProps {
     setSecret: (secret: string) => void;
@@ -49,13 +50,13 @@ export const Login: React.FC<LoginProps> = ({ setSecret }) => {
        );
 
   return (
-		<div className="login">
-    		<Card className="login-container">
+		<div className={styles.login}>
+    		<Card className={styles.loginContainer}>
 				<InputGroup
 					type={showPassword ? "text" : "password"}
 					placeholder="Enter your password..."
 					rightElement={lockButton}
-					className="password-field"
+					className={styles.passwordField}
 					value={password}
 					onValueChange={setPassword}
 				/>

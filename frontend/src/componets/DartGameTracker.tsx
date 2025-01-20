@@ -1,6 +1,7 @@
 import { Button, Card } from '@blueprintjs/core';
 import React from 'react';
 import { Modifier, Throw } from '../util/Throw';
+import styles from './DartGameTracker.module.css'
 
 const STARTING_SCORE = 501;
 
@@ -29,15 +30,15 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
         setSelectedModifier(undefined);
     }, [setPlayerOneThrows, setSelectedModifier, selectedModifier])
     return (
-        <div className="play">
-            <div className="scores">
+        <div className={styles.play}>
+            <div className={styles.scoreHalf}>
                 <Card elevation={2}>
-                    <div className="score-container">
+                    <div className={styles.scoreContainer}>
                         <h2>{playerOneScore}</h2>
                         <p>{playerOne}</p>
                     </div>
                     <div>
-                        <div className="throws">
+                        <div className={styles.throws}>
                             <div>
                                 1
                             </div>
@@ -48,23 +49,23 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                                 3
                             </div>
                         </div>
-                        <div className="round-total">
+                        <div className={styles.roundTotal}>
                             9
                         </div>
                     </div>
-                    <div className="stats-col">
+                    <div className={styles.stats}>
                         <p>Game Avg:</p>
                         <p>10</p>
                     </div>
                 </Card>
                 <Card elevation={2}>
-                    <div className="score-container">
+                    <div className={styles.scoreContainer}>
                         <h2>501</h2>
                         <p>{playerTwo}</p>
                     </div>
                 </Card>
             </div>
-            <div className="controls">
+            <div className={styles.controls}>
                 {Array.from({ length: 20 }, (_, index) => (
                     <Button key={index + 1} text={`${index + 1}`} onClick={createHandleNewThrow(index + 1)} />
                 ))}

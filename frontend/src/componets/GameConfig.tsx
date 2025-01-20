@@ -1,6 +1,7 @@
 import { Button, HTMLSelect } from '@blueprintjs/core';
 import React from 'react';
 import { getToaster } from '../util/toaster';
+import styles from './GameConfig.module.css'
 
 interface GameConfigProps {
     startGame: () => void;
@@ -28,11 +29,11 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
         }
     }, [startGame, playerOne, playerTwo, onSavePlayerOne, onSavePlayerTwo]);
     return (
-        <div className="pick-players">
-            <div className="instructions">
+        <div className={styles.pickPlayers}>
+            <div className={styles.instructions}>
                 Pick your players
             </div>
-            <div className="player-selection-container">
+            <div className={styles.playerSelectionContainer}>
                 <HTMLSelect options={players} fill={true} large={true} value={playerOne} onChange={handlePlayerOneSelect} />
                 <HTMLSelect options={players} fill={true} large={true} value={playerTwo} onChange={handlePlayerTwoSelect} />
             </div>
