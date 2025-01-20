@@ -11,6 +11,21 @@
     }
 }
 
+.leftColumn {
+    display: flex;
+}
+
+.activeTurn {
+    background-color: green;
+    width: 15px;
+    margin: -10px 0;
+}
+
+.inactiveTurn {
+    width: 15px;
+    margin: -10px 0;
+}
+
 .scoreContainer {
     display: flex;
     flex-direction: column;
@@ -92,4 +107,8 @@
     text-align: center;
     align-items: center;
     margin: auto;
+
+    > h4 {
+        margin: 0;
+    }
 }

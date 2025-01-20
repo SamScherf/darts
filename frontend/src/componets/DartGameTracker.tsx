@@ -15,6 +15,18 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
 
     const players = React.useMemo(() => [playerOne, playerTwo], [playerOne, playerTwo]);
 
+    const currentTurnIndex = React.useMemo(() => {
+        const lastThrow = throws[throws.length - 1];
+
+        // Start of game
+        if (lastThrow == null) {
+            return 0;
+        }
+
+        const isNewTurn = getIsLastThrowOfTurn(lastThrow);
+        return isNewTurn ? lastThrow.turnIndex + 1 : lastThrow.turnIndex;
+    }, [throws])
+
     const scoreByPlayer = React.useMemo<number[]>(() => {
         return players.map(player => {
             const playersLastTurn = getPlayersLastTurn(player, throws);
@@ -38,42 +50,26 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
         return players.map(player => {
             const playersLastTurn = getPlayersLastTurn(player, throws);
             const playersLastThrow = playersLastTurn[playersLastTurn.length - 1];
-            const lastThrow = throws[throws.length - 1];
 
             // Start of game
-            if (playersLastThrow == null || lastThrow == null) {
+            if (playersLastThrow == null) {
                 return [];
             }
 
-            const isNewTurn = getIsLastThrowOfTurn(lastThrow);
-            const currentTurnIndex = isNewTurn ? lastThrow.turnIndex + 1 : lastThrow.turnIndex;
             const turnsSinceLastThrow = currentTurnIndex - playersLastThrow.turnIndex;
             const isStartOfUsersTurn = turnsSinceLastThrow !== 0 && turnsSinceLastThrow % 2 === 0;
             
             return isStartOfUsersTurn ? [] : playersLastTurn;
         });
-    }, [throws, players])
-
-    const totalTurnsByPlayer = React.useMemo(() => {
-        return players.map((player) => {
-            const playersThrows = throws.filter(_throw => _throw.user === player);
-
-            // Hasn't thrown yet
-            if (playersThrows.length === 0) {
-                return 0;
-            } else {
-                return new Set(playersThrows.map(_throw => _throw.turnIndex)).size
-            }
-        })
-    }, [players, throws])
+    }, [throws, players, currentTurnIndex])
 
     const averageByPlayer = React.useMemo(() => {
-        return players.map((_player, playerIndex) => {
-            const totalPointsScore = STARTING_SCORE - scoreByPlayer[playerIndex];
-            const totalTurns = totalTurnsByPlayer[playerIndex];
-            return totalTurns === 0 ? 0 : totalPointsScore / totalTurns;
+        return players.map((player, playerIndex) => {
+            const playersPointsScore = STARTING_SCORE - scoreByPlayer[playerIndex];
+            const playersThrowCount = throws.filter(_throw => _throw.user === player).length;
+            return playersThrowCount === 0 ? 0 : (playersPointsScore / playersThrowCount) * 3;
         })
-    }, [players, scoreByPlayer, totalTurnsByPlayer])
+    }, [players, scoreByPlayer, currentTurnIndex])
 
 
     const createHandleModifierSelected = React.useCallback((modifier: Modifier) =>
@@ -143,9 +139,12 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
         <div className={styles.play}>
             <div className={styles.scoreHalf}>
                 <Card elevation={2}>
-                    <div className={styles.scoreContainer}>
-                        <h2>{scoreByPlayer[0]}</h2>
-                        <p>{playerOne}</p>
+                    <div className={styles.leftColumn}>
+                        <div className={currentTurnIndex % 2 === 0 ? styles.activeTurn : styles.inactiveTurn}/>
+                        <div className={styles.scoreContainer}>
+                            <h2>{scoreByPlayer[0]}</h2>
+                            <p>{playerOne}</p>
+                        </div>
                     </div>
                     <div>
                         <div className={styles.throws}>
@@ -165,15 +164,20 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                     </div>
                     <div className={styles.stats}>
                         <h4>
-                            Game Avg:<br />
-                            {averageByPlayer[0]}
+                            Avg: {averageByPlayer[0].toFixed(2)}
+                        </h4>
+                        <h4>
+                            Turn: {getPlayersTurnCount(currentTurnIndex, 0)}
                         </h4>
                     </div>
                 </Card>
                 <Card elevation={2}>
-                    <div className={styles.scoreContainer}>
-                        <h2>{scoreByPlayer[1]}</h2>
-                        <p>{playerTwo}</p>
+                    <div className={styles.leftColumn}>
+                        <div className={currentTurnIndex % 2 === 1 ? styles.activeTurn : styles.inactiveTurn}/>
+                        <div className={styles.scoreContainer}>
+                            <h2>{scoreByPlayer[1]}</h2>
+                            <p>{playerTwo}</p>
+                        </div>
                     </div>
                     <div>
                         <div className={styles.throws}>
@@ -193,8 +197,10 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                     </div>
                     <div className={styles.stats}>
                         <h4>
-                            Game Avg:<br />
-                            {averageByPlayer[1]}
+                            Avg: {averageByPlayer[1].toFixed(2)}
+                        </h4>
+                        <h4>
+                            Turn: {getPlayersTurnCount(currentTurnIndex, 1)}
                         </h4>
                     </div>
                 </Card>
@@ -227,6 +233,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
     ) 
 }
 
+// TODO: Optimize this to be O(1) instead of O(n)
 function getPlayersLastTurn(user: string, throws: Throw[]): Throw[] {
     const playersThrows = throws.filter(_throw => _throw.user === user);
     const playersLastThrow = playersThrows[playersThrows.length - 1];
@@ -245,4 +252,10 @@ function getIsLastThrowOfTurn(_throw: Throw) {
 
 function getIsBust(_throw: Throw) {
     return _throw.value > _throw.startingScore ;
+}
+
+function getPlayersTurnCount(currentTurnIndex: number, userIndex: number) {
+    const roundIndex =  Math.floor(currentTurnIndex / 2);
+    const playerTurnCount = userIndex <= currentTurnIndex % 2 ? roundIndex + 1 : roundIndex;
+    return playerTurnCount;
 }
