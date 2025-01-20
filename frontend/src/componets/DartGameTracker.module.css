@@ -84,17 +84,16 @@
 .throws {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+}
 
-    /* Individual throw value */
-    > div {
-        margin: 10px;
-        background-color: grey;
-        color: white;
-        text-align: center;
-        aspect-ratio: 1 / 1;
-        display: grid;
-        align-items: center;
-    }
+.throw {
+    margin: 10px;
+    background-color: grey;
+    color: white;
+    text-align: center;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    align-items: center;
 }
 
 .roundTotal {

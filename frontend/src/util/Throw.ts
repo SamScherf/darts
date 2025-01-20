@@ -27,8 +27,8 @@ export enum Modifier {
     inner,
     outer,
     floor,
-    wood,
-    board,
+    blackboard,
+    dartboard,
     wall
 }
 

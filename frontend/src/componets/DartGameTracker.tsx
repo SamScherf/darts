@@ -160,15 +160,9 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                     </div>
                     <div>
                         <div className={styles.throws}>
-                            <div>
-                                {lastTurnByPlayer[0][0]?.value}
-                            </div>
-                            <div>
-                                {lastTurnByPlayer[0][1]?.value}
-                            </div>
-                            <div>
-                                {lastTurnByPlayer[0][2]?.value}
-                            </div>
+                            <ThrowTag _throw={lastTurnByPlayer[0][0]} />
+                            <ThrowTag _throw={lastTurnByPlayer[0][1]} />
+                            <ThrowTag _throw={lastTurnByPlayer[0][2]} />
                         </div>
                         <div className={styles.roundTotal}>
                             {lastTurnByPlayer[0].reduce((acc, _throw) => acc + _throw.value, 0)}
@@ -193,15 +187,9 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                     </div>
                     <div>
                         <div className={styles.throws}>
-                            <div>
-                                {lastTurnByPlayer[1][0]?.value}
-                            </div>
-                            <div>
-                                {lastTurnByPlayer[1][1]?.value}
-                            </div>
-                            <div>
-                                {lastTurnByPlayer[1][2]?.value}
-                            </div>
+                            <ThrowTag _throw={lastTurnByPlayer[1][0]} />
+                            <ThrowTag _throw={lastTurnByPlayer[1][1]} />
+                            <ThrowTag _throw={lastTurnByPlayer[1][2]} />
                         </div>
                         <div className={styles.roundTotal}>
                             {lastTurnByPlayer[1].reduce((acc, _throw) => acc + _throw.value, 0)}
@@ -232,8 +220,8 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                 />
                 <Button key={24} text={"3x"} onClick={createHandleModifierSelected(Modifier.treble)}
                         intent="success" disabled={selectedModifier != null && selectedModifier !== Modifier.treble} />
-                <Button key={25} text={"Board-0"} onClick={createHandleNewThrow(0, Modifier.board)} intent="warning" disabled={selectedModifier != null} />
-                <Button key={26} text={"Wood-0"} onClick={createHandleNewThrow(0, Modifier.wood)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={25} text={"Dartboard-0"} onClick={createHandleNewThrow(0, Modifier.dartboard)} intent="warning" disabled={selectedModifier != null} />
+                <Button key={26} text={"Blackboard-0"} onClick={createHandleNewThrow(0, Modifier.blackboard)} intent="warning" disabled={selectedModifier != null} />
                 <Button key={27} text={"Wall-0"} onClick={createHandleNewThrow(0, Modifier.wall)} intent="warning" disabled={selectedModifier != null} />
                 <Button key={28} text={"Floor-0"} onClick={createHandleNewThrow(0, Modifier.floor)} intent="warning" disabled={selectedModifier != null} />
                 <Button key={29} text={"Inner-Circle"} onClick={createHandleModifierSelected(Modifier.inner)}
@@ -243,6 +231,40 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
             </div>
         </div>
     ) 
+}
+
+interface ThrowTagProps {
+    _throw: Throw | undefined;
+}
+export const ThrowTag: React.FC<ThrowTagProps> = ({_throw}) => {
+    let modifierPrefix: string;
+    switch (_throw?.modifier) {
+        case Modifier.double:
+            modifierPrefix = "D"
+            break;
+        case Modifier.treble:
+            modifierPrefix = "T"
+            break;
+        case Modifier.blackboard:
+            modifierPrefix = "BB"
+            break;
+        case Modifier.dartboard:
+            modifierPrefix = "DB";
+            break;
+        case Modifier.floor:
+            modifierPrefix = "F"
+            break;
+        case Modifier.wall:
+            modifierPrefix = "W"
+            break;
+        default:
+            modifierPrefix = "";
+    }
+    return (
+        <div className={styles.throw}>
+            {modifierPrefix}{_throw?.hit}
+        </div>
+    );
 }
 
 // TODO: Optimize this to be O(1) instead of O(n)
