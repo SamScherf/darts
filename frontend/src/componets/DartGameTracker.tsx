@@ -10,52 +10,73 @@ interface DartGameTrackerProps {
     playerTwo: string;
 }
 export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo}) => {
-    const [throwIndex, setThrowIndex] = React.useState<number>(0);
-    const [playerOneThrows, setPlayerOneThrows] = React.useState<Throw[]>([])
-    const [playerTwoThrows, setPlayerTwoThrows] = React.useState<Throw[]>([])
-
-    const playerOneCurrentScore = React.useMemo(() => {
-        const lastThrow = playerOneThrows[playerOneThrows.length - 1];
-        const lastScore = lastThrow?.startingScore ?? STARTING_SCORE;
-        const lastValue = lastThrow?.value ?? 0;
-        return lastScore - lastValue;
-    }, [playerOneThrows])
-    const playerTwoCurrentScore = React.useMemo(() => {
-        const lastThrow = playerTwoThrows[playerTwoThrows.length - 1];
-        const lastScore = lastThrow?.startingScore ?? STARTING_SCORE;
-        const lastValue = lastThrow?.value ?? 0;
-        return lastScore - lastValue;
-    }, [playerTwoThrows])
-
-    const thingOne = React.useMemo(() => {
-        const roundIndex = throwIndex % 6;
-        if (roundIndex < 1) {
-            return undefined;
-        } else {
-            const offSet = roundIndex < 3 ? roundIndex : 3;
-            return playerOneThrows[playerOneThrows.length - offSet].value;
-        }
-    }, [throwIndex, playerOneThrows])
-    const thingTwo = React.useMemo(() => {
-        const roundIndex = throwIndex % 6;
-        if (roundIndex < 2) {
-            return undefined;
-        } else {
-            const offSet = roundIndex < 3 ? roundIndex : 3;
-            return playerOneThrows[playerOneThrows.length - offSet + 1].value;
-        }
-    }, [throwIndex, playerOneThrows])
-    const thingThree = React.useMemo(() => {
-        const roundIndex = throwIndex % 6;
-        if (roundIndex < 3) {
-            return undefined;
-        } else {
-            const offSet = roundIndex < 3 ? roundIndex : 3;
-            return playerOneThrows[playerOneThrows.length - offSet + 2].value;
-        }
-    }, [throwIndex, playerOneThrows])
-
+    const [throws, setThrows] = React.useState<Throw[]>([]);
     const [selectedModifier, setSelectedModifier] = React.useState<Modifier | undefined>(undefined)
+
+    const players = React.useMemo(() => [playerOne, playerTwo], [playerOne, playerTwo]);
+
+    const scoreByPlayer = React.useMemo<number[]>(() => {
+        // Start of game
+        if (throws.length === 0) {
+            return [STARTING_SCORE, STARTING_SCORE];
+        }
+
+        // Filter out busted rounds
+        const bustedTurns = throws.filter(_throw => _throw.value > _throw.startingScore).map(_throw => _throw.turnIndex);
+        const throwsWithoutBustedRounds = throws.filter(_throw => !bustedTurns.includes(_throw.turnIndex))
+        
+        // Sum by players
+        const playerOneScore = STARTING_SCORE - throwsWithoutBustedRounds
+                        .filter(_throw => _throw.user === playerOne)
+                        .map(_throw => _throw.value)
+                        .reduce((acc, num) => acc + num, 0);
+        const playerTwoScore = STARTING_SCORE - throwsWithoutBustedRounds
+                        .filter(_throw => _throw.user === playerTwo)
+                        .map(_throw => _throw.value)
+                        .reduce((acc, num) => acc + num, 0);
+
+        return [playerOneScore, playerTwoScore];
+
+    }, [throws, playerOne, playerTwo]);
+
+    const lastTurnByPlayer = React.useMemo<Throw[][]>(() => {
+        return players.map(player => {
+            const playersThrows = throws.filter(_throw => _throw.user === player);
+            const playersLastThrow = playersThrows[playersThrows.length - 1];
+
+            // Start of game
+            if (playersLastThrow == null) {
+                return [];
+            }
+
+            // Start of users turn
+            const lastThrow = throws[throws.length - 1];
+            const isNewTurn =  lastThrow.value > lastThrow.startingScore || lastThrow.throwIndex === 2;
+            const currentTurnIndex = isNewTurn ? lastThrow.turnIndex + 1 : lastThrow.turnIndex;
+            const turnsSinceLastThrow = currentTurnIndex - playersLastThrow.turnIndex;
+            if (turnsSinceLastThrow !== 0 && turnsSinceLastThrow % 2 === 0) {
+                return [];
+            }
+
+            return playersThrows.filter(_throw => _throw.turnIndex === playersLastThrow.turnIndex);
+        });
+    }, [throws, players])
+
+    const averageByPlayer = React.useMemo(() => {
+        return players.map((player, playerIndex) => {
+            const playersThrows = throws.filter(_throw => _throw.user === player);
+
+            // Hasn't thrown yet
+            if (playersThrows.length === 0) {
+                return 0;
+            } else {
+                const numOfTurns = new Set(playersThrows.map(_throw => _throw.turnIndex)).size
+                const totalPointsScore = STARTING_SCORE - scoreByPlayer[playerIndex]
+                return totalPointsScore / numOfTurns;
+            }
+        })
+    }, [throws, players])
+
 
     const createHandleModifierSelected = React.useCallback((modifier: Modifier) =>
         () => setSelectedModifier(selectedModifier === modifier ? undefined : modifier)
@@ -70,64 +91,104 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
         } else {
             value = hit;
         }
+   
+        setThrows(oldThrows => {
+            const lastThrow = oldThrows[oldThrows.length - 1];
+            if (lastThrow == null) {
+                return [
+                    {
+                    value,
+                    modifier: modifier ?? selectedModifier,
+                    user: players[0],
+                    turnIndex: 0,
+                    throwIndex: 0,
+                    hit,
+                    startingScore: STARTING_SCORE
+                    }
+                ]
+            }
 
-        // Set based on who threw
-        if (throwIndex % 6 < 3) {
-            setPlayerOneThrows(oldThrows => {
-                    const startingScore = oldThrows.length === 0
-                        ? STARTING_SCORE
-                        : oldThrows[oldThrows.length - 1].startingScore - oldThrows[oldThrows.length - 1].value;
-                    const newThrow = {hit: value, modifier: modifier ?? selectedModifier, startingScore, value};
-                    return [...oldThrows, newThrow];
-                }
-            )
-        } else {
-            setPlayerTwoThrows(oldThrows => {
-                    const startingScore = oldThrows.length === 0
-                        ? STARTING_SCORE
-                        : oldThrows[oldThrows.length - 1].startingScore - oldThrows[oldThrows.length - 1].value;
-                    const newThrow = {hit: value, modifier: modifier ?? selectedModifier, startingScore, value};
-                    return [...oldThrows, newThrow];
-                }
-            )
-        }
+            const lastThrowIndex = lastThrow.throwIndex;
+            const lastTurnIndex = lastThrow.turnIndex;
 
-        setThrowIndex(currentThrowIndex => currentThrowIndex + 1);
+            const isNewTurn =  lastThrow.value > lastThrow.startingScore || lastThrowIndex === 2;
+            const throwIndex = isNewTurn ? 0 : lastThrowIndex + 1;
+            const turnIndex = isNewTurn ? lastTurnIndex + 1 : lastTurnIndex;
+            const user = players[turnIndex % 2];
+
+            const usersThrows = oldThrows.filter(_throw => _throw.user === user);
+            const lastThrowByUser = usersThrows[usersThrows.length - 1];
+            const startingScore = lastThrowByUser == null ? STARTING_SCORE : lastThrowByUser.startingScore < lastThrowByUser.value
+                                    ? lastThrowByUser.startingScore - lastThrowByUser.value
+                                    : lastThrowByUser.startingScore;
+
+            const newThrow: Throw = {
+                value,
+                modifier: modifier ?? selectedModifier,
+                user: players[turnIndex % 2],
+                turnIndex,
+                throwIndex,
+                hit,
+                startingScore,
+            } 
+            return [...oldThrows, newThrow];
+        })
         setSelectedModifier(undefined);
-    }, [setPlayerOneThrows, setSelectedModifier, selectedModifier, throwIndex])
+    }, [setThrows, setSelectedModifier, selectedModifier, players]);
+
     return (
         <div className={styles.play}>
             <div className={styles.scoreHalf}>
                 <Card elevation={2}>
                     <div className={styles.scoreContainer}>
-                        <h2>{playerOneCurrentScore}</h2>
+                        <h2>{scoreByPlayer[0]}</h2>
                         <p>{playerOne}</p>
                     </div>
                     <div>
                         <div className={styles.throws}>
                             <div>
-                                {thingOne}
+                                {lastTurnByPlayer[0][0]?.value}
                             </div>
                             <div>
-                                {thingTwo}
+                                {lastTurnByPlayer[0][1]?.value}
                             </div>
                             <div>
-                                {thingThree}
+                                {lastTurnByPlayer[0][2]?.value}
                             </div>
                         </div>
                         <div className={styles.roundTotal}>
-                            9
+                            {lastTurnByPlayer[0].reduce((acc, _throw) => acc + _throw.value, 0)}
                         </div>
                     </div>
                     <div className={styles.stats}>
                         <p>Game Avg:</p>
-                        <p>10</p>
+                        <p>{averageByPlayer[0]}</p>
                     </div>
                 </Card>
                 <Card elevation={2}>
                     <div className={styles.scoreContainer}>
-                        <h2>{playerTwoCurrentScore}</h2>
+                        <h2>{scoreByPlayer[1]}</h2>
                         <p>{playerTwo}</p>
+                    </div>
+                    <div>
+                        <div className={styles.throws}>
+                            <div>
+                                {lastTurnByPlayer[1][0]?.value}
+                            </div>
+                            <div>
+                                {lastTurnByPlayer[1][1]?.value}
+                            </div>
+                            <div>
+                                {lastTurnByPlayer[1][2]?.value}
+                            </div>
+                        </div>
+                        <div className={styles.roundTotal}>
+                            {lastTurnByPlayer[1].reduce((acc, _throw) => acc + _throw.value, 0)}
+                        </div>
+                    </div>
+                    <div className={styles.stats}>
+                        <p>Game Avg:</p>
+                        <p>{averageByPlayer[1]}</p>
                     </div>
                 </Card>
             </div>
