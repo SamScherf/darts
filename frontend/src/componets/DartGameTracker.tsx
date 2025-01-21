@@ -3,14 +3,17 @@ import React from 'react';
 import { Modifier, Throw } from '../util/Throw';
 import styles from './DartGameTracker.module.css'
 import { useNavigate } from 'react-router-dom';
+import { post } from 'src/util/backend';
+import { getToaster } from 'src/util/toaster';
 
 const STARTING_SCORE = 501;
 
 interface DartGameTrackerProps {
     playerOne: string;
     playerTwo: string;
+    password: string;
 }
-export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo}) => {
+export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo, password}) => {
 	const navigate = useNavigate();
 
     const [throws, setThrows] = React.useState<Throw[]>([]);
@@ -140,12 +143,36 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
 
     const handleDiscardGame = React.useCallback(() => navigate("/"), [navigate])
 
+    const handleSaveGame = React.useCallback(async () => {
+		const toaster = await getToaster();
+		try {
+			await post("/add-game", {password, throws})
+		} catch(e: any) {
+			if (e.response) {
+				const statusCode = e.response.status;
+				if (statusCode === 401) {
+					toaster.show({intent: "danger", message: "Invalid password" });
+				} else if (statusCode === 429) {
+					toaster.show({intent: "danger", message: "Too many attempts, please wait 1 minute" });
+				}
+				toaster.show({intent: "danger", message: "Error saving game" });
+			} else {
+				toaster.show({intent: "danger", message: "Error saving game" });
+			}
+			console.warn(e);
+			return;
+		}
+
+		toaster.show({intent: "success", message: "Game saved" });
+        navigate("/");
+    }, [password, throws, navigate]);
+
     return (
         <div className={styles.play}>
             <Dialog isOpen={scoreByPlayer.some(score => score === 0)} >
                 <DialogBody className={styles.winningDialog}>
                     {players[scoreByPlayer.findIndex(score => score === 0)]} won
-                    <Button text="Save Game" intent="success" />
+                    <Button text="Save Game" intent="success" onClick={handleSaveGame}/>
                     <Button text="Discard Game" intent="danger" onClick={handleDiscardGame}/>
                 </DialogBody>
             </Dialog>

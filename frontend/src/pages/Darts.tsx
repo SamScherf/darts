@@ -13,7 +13,7 @@ export const Darts: React.FC<DartsProps> = ({ password }) => {
     const handleStartGame = React.useCallback(() => setReady(true), [setReady])
 
     return ready && playerOne != null && playerTwo != null ? (
-        <DartGameTracker playerOne={playerOne} playerTwo={playerTwo} />
+        <DartGameTracker playerOne={playerOne} playerTwo={playerTwo} password={password} />
     ) : (
         <GameConfig startGame={handleStartGame} onSavePlayerOne={setPlayerOne} onSavePlayerTwo={setPlayerTwo} password={password} />
     )

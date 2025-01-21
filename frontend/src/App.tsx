@@ -23,7 +23,7 @@ export const App: React.FC = () => {
          <Route path="/login" element={<Login setSecret={setSecret} />} />
          <Route path="/" element={secret != null ? <Home onLogout={handleLogout} /> : <Navigate to="/login" />} />
          <Route path="/darts" element={secret != null ? <Darts password={secret} /> : <Navigate to="/login" />} />
-         <Route path="/stats" element={secret != null ? <Stats /> : <Navigate to="/login" />} />
+         <Route path="/stats" element={secret != null ? <Stats password={secret} /> : <Navigate to="/login" />} />
        </Routes>
    </Router>
   </QueryClientProvider>

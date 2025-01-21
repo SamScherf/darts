@@ -28,6 +28,20 @@ db.run(`
   );
 `);
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS throws (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      value INTEGER NOT NULL,
+      user TEXT NOT NULL,
+      throwIndex INTEGER NOT NULL,
+      turnIndex INTEGER NOT NULL,
+      hit INTEGER NOT NULL,
+      modifier TEXT,
+      startingScore INTEGER NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+`)
+
 dotenv.config();
 
 // Allow 5 attempts per minute
@@ -73,6 +87,11 @@ app.post('/create-user', (req, res) => {
     return;
   }
 
+  if (username == null) {
+    res.status(401).json({message: "Username invalid"})
+    return;
+  }
+
   db.run(`
     INSERT INTO users (username) VALUES (?);
   `, [username], function(err) {
@@ -83,6 +102,101 @@ app.post('/create-user', (req, res) => {
       res.json({ message: `User ${username} created successfully` });
     }
   });
+});
+
+app.post('/add-game', (req, res) => {
+  const { password, throws } = req.body;
+
+  // Check password first
+  if (password !== process.env.MASTERPASSWORD) {
+    res.status(401).json({message: "Invalid password"})
+    return;
+  }
+
+  // Ensure throws is proper array
+  if (!Array.isArray(throws)) {
+    res.status(400).json({ error: "Invalid input, expected an array of throws" });
+    return;
+  }
+
+  const insertQuery = `
+        INSERT INTO throws (value, user, throwIndex, turnIndex, hit, modifier, startingScore) 
+        VALUES (?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const errors: any = [];
+    db.serialize(() => {
+        const statment = db.prepare(insertQuery);
+
+        throws.forEach((throwData, index) => {
+            const { value, user, throwIndex, turnIndex, hit, modifier, startingScore } = throwData;
+
+            // Validate required fields
+            if (
+                value == null ||
+                !user ||
+                throwIndex == null ||
+                turnIndex == null ||
+                hit == null ||
+                startingScore == null
+            ) {
+                errors.push({ index, message: "Missing required fields" });
+                return;
+            }
+
+            statment.run(
+                value,
+                user,
+                throwIndex,
+                turnIndex,
+                hit,
+                modifier || null,
+                startingScore,
+                (err: any) => {
+                    if (err) {
+                        errors.push({ index, message: err.message });
+                    }
+                }
+            );
+        });
+
+        statment.finalize();
+    });
+
+    if (errors.length > 0) {
+        res.status(400).json({ message: "Some throws failed", errors });
+        return;
+    }
+
+    res.status(200).json({ message: "Game successfully saved" });
+
+});
+
+app.post('/get-raw-averages', (req, res) => {
+  const { password } = req.body;
+
+  // Check password first
+  if (password !== process.env.MASTERPASSWORD) {
+    res.status(401).json({message: "Invalid password"})
+    return;
+  }
+
+  const query = `
+  SELECT user, AVG(value) AS averageScore
+  FROM throws
+  GROUP BY user;
+  `;
+
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ message: "Error retrieving average scores" });
+      return;
+    }
+
+    res.status(200).json(rows);
+  });
+
 });
 
 app.listen(PORT, () => {
