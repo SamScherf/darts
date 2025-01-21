@@ -2,6 +2,10 @@
     display: flex;
     flex-direction: column;
     margin: 30vh 3vw;
+
+    > button {
+        margin: 8px;
+    }
 }
 
 .instructions {
@@ -15,5 +19,11 @@
 
     > div {
         margin: 8px;
+    }
+}
+
+.addPlayerBody {
+    > div {
+        margin: 6px;
     }
 }

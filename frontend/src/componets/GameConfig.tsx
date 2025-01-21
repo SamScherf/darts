@@ -1,9 +1,11 @@
-import { Button, MenuItem, Spinner } from '@blueprintjs/core';
+import { Button, Dialog, DialogBody, InputGroup, MenuItem, Spinner } from '@blueprintjs/core';
 import React from 'react';
 import { getToaster } from '../util/toaster';
 import styles from './GameConfig.module.css'
 import { User, useUsers } from 'src/hooks/useUsers';
 import { ItemRenderer, Select } from '@blueprintjs/select';
+import { post } from 'src/util/backend';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface GameConfigProps {
     startGame: () => void;
@@ -12,10 +14,13 @@ interface GameConfigProps {
     password: string;
 }
 export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerOne, onSavePlayerTwo, password }) => {
+    const queryClient = useQueryClient()
     const {isLoading, data: users} = useUsers(password);
 
     const [playerOne, setPlayerOne] = React.useState<User | undefined>(undefined);
     const [playerTwo, setPlayerTwo] = React.useState<User | undefined>(undefined);
+    const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] = React.useState(false);
+    const [newPlayerUsername, setNewPlayerUsername] = React.useState<string | undefined>(undefined)
 
     const handleStart = React.useCallback(async () => {
         const toaster = await getToaster();
@@ -34,7 +39,35 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
         startGame();
     }, [startGame, playerOne, playerTwo, onSavePlayerOne, onSavePlayerTwo]);
 
-    const myFunc = () => {debugger};
+    const openAddPlayerDialog = React.useCallback(() => setIsAddPlayerDialogOpen(true), [setIsAddPlayerDialogOpen]);
+    const closeAddPlayerDialog = React.useCallback(() => setIsAddPlayerDialogOpen(false), [setIsAddPlayerDialogOpen]);
+
+    const handleAddPlayer = React.useCallback(async () => {
+		const toaster = await getToaster();
+		try {
+			await post("/create-user", {password, username: newPlayerUsername})
+		} catch(e: any) {
+			if (e.response) {
+				const statusCode = e.response.status;
+				if (statusCode === 401) {
+					toaster.show({intent: "danger", message: "Invalid password" });
+				} else if (statusCode === 429) {
+					toaster.show({intent: "danger", message: "Too many attempts, please wait 1 minute" });
+				}
+				toaster.show({intent: "danger", message: "Error adding user" });
+			} else {
+				toaster.show({intent: "danger", message: "Error adding user" });
+			}
+			console.warn(e);
+			return;
+		}
+
+		toaster.show({intent: "success", message: "Player added" });
+        queryClient.invalidateQueries({ queryKey: ['users'] })
+        setNewPlayerUsername(undefined);
+        setIsAddPlayerDialogOpen(false);
+    }, [newPlayerUsername, password, setNewPlayerUsername, setIsAddPlayerDialogOpen, queryClient]);
+
     return (
         <div className={styles.pickPlayers}>
             <div className={styles.instructions}>
@@ -66,7 +99,15 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
                 </div>
             )
         }
-            <Button text="Start" onClick={handleStart} intent="success" fill={true} />
+            <Button text="Start" onClick={handleStart} intent="success" fill={true} large={true} />
+            <Button text="Add Player" onClick={openAddPlayerDialog} intent="warning" fill={true} large={true} />
+            <Dialog isOpen={isAddPlayerDialogOpen} onClose={closeAddPlayerDialog} canEscapeKeyClose={true} canOutsideClickClose={true} >
+                <DialogBody className={styles.addPlayerBody}>
+                    Please be careful here and don't add the same person twice with different usernames. One day this username will be your login.
+                    <InputGroup type="text" value={newPlayerUsername} onValueChange={setNewPlayerUsername}/>
+                    <Button text="Add Player" onClick={handleAddPlayer} intent="success" fill={true} large={true} disabled={newPlayerUsername == null}/>
+                </DialogBody>
+            </Dialog>
         </div>
     )
 }
