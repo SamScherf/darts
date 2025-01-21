@@ -2,7 +2,10 @@ import React from 'react';
 import { GameConfig } from '../componets/GameConfig';
 import { DartGameTracker } from '../componets/DartGameTracker';
 
-export const Darts: React.FC = () => {
+interface DartsProps {
+    password: string
+}
+export const Darts: React.FC<DartsProps> = ({ password }) => {
     const [ready, setReady] = React.useState<Boolean>(false);
     const [playerOne, setPlayerOne] = React.useState<string | undefined>(undefined);
     const [playerTwo, setPlayerTwo] = React.useState<string | undefined>(undefined);
@@ -12,6 +15,6 @@ export const Darts: React.FC = () => {
     return ready && playerOne != null && playerTwo != null ? (
         <DartGameTracker playerOne={playerOne} playerTwo={playerTwo} />
     ) : (
-        <GameConfig startGame={handleStartGame} onSavePlayerOne={setPlayerOne} onSavePlayerTwo={setPlayerTwo} />
+        <GameConfig startGame={handleStartGame} onSavePlayerOne={setPlayerOne} onSavePlayerTwo={setPlayerTwo} password={password} />
     )
 }

@@ -72,7 +72,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
             const playersThrowCount = throws.filter(_throw => _throw.user === player).length;
             return playersThrowCount === 0 ? 0 : (playersPointsScore / playersThrowCount) * 3;
         })
-    }, [players, scoreByPlayer, currentTurnIndex])
+    }, [players, scoreByPlayer, throws])
 
 
     const createHandleModifierSelected = React.useCallback((modifier: Modifier) =>

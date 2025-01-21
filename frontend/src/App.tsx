@@ -4,6 +4,12 @@ import { Login } from './pages/Login';
 import { Home } from './pages/Home';
 import { Stats } from './pages/Stats';
 import { Darts } from './pages/Darts';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export const App: React.FC = () => {
 	const [secret, setSecret] = React.useState<string | undefined>(undefined)
@@ -11,13 +17,15 @@ export const App: React.FC = () => {
 	const handleLogout = React.useCallback(() => setSecret(undefined), [setSecret])
 
 	return (
-	<Router>
-      <Routes>
-        <Route path="/login" element={<Login setSecret={setSecret} />} />
-        <Route path="/" element={secret != null ? <Home onLogout={handleLogout} /> : <Navigate to="/login" />} />
-        <Route path="/darts" element={secret != null ? <Darts /> : <Navigate to="/login" />} />
-        <Route path="/stats" element={secret != null ? <Stats /> : <Navigate to="/login" />} />
-      </Routes>
-    </Router>
+  <QueryClientProvider client={queryClient}>
+	  <Router>
+       <Routes>
+         <Route path="/login" element={<Login setSecret={setSecret} />} />
+         <Route path="/" element={secret != null ? <Home onLogout={handleLogout} /> : <Navigate to="/login" />} />
+         <Route path="/darts" element={secret != null ? <Darts password={secret} /> : <Navigate to="/login" />} />
+         <Route path="/stats" element={secret != null ? <Stats /> : <Navigate to="/login" />} />
+       </Routes>
+   </Router>
+  </QueryClientProvider>
 	);
 }
