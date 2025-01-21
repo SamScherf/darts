@@ -8,7 +8,7 @@ export type Average = {
 }
 
 export const useRawAverages = (password: string) => useQuery({
-    queryKey: ['users'],
+    queryKey: ['raw-averages'],
     queryFn: async () => {
         const toaster = await getToaster();
         try {

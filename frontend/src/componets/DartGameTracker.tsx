@@ -5,6 +5,7 @@ import styles from './DartGameTracker.module.css'
 import { useNavigate } from 'react-router-dom';
 import { post } from 'src/util/backend';
 import { getToaster } from 'src/util/toaster';
+import { useQueryClient } from '@tanstack/react-query';
 
 const STARTING_SCORE = 501;
 
@@ -14,6 +15,7 @@ interface DartGameTrackerProps {
     password: string;
 }
 export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, playerTwo, password}) => {
+    const queryClient = useQueryClient()
 	const navigate = useNavigate();
 
     const [throws, setThrows] = React.useState<Throw[]>([]);
@@ -163,9 +165,10 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
 			return;
 		}
 
+        queryClient.invalidateQueries({ queryKey: ['raw-averages'] })
 		toaster.show({intent: "success", message: "Game saved" });
         navigate("/");
-    }, [password, throws, navigate]);
+    }, [password, throws, navigate, queryClient]);
 
     return (
         <div className={styles.play}>
