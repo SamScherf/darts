@@ -20,7 +20,7 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
     const [playerOne, setPlayerOne] = React.useState<User | undefined>(undefined);
     const [playerTwo, setPlayerTwo] = React.useState<User | undefined>(undefined);
     const [isAddPlayerDialogOpen, setIsAddPlayerDialogOpen] = React.useState(false);
-    const [newPlayerUsername, setNewPlayerUsername] = React.useState<string | undefined>(undefined)
+    const [newPlayerUsername, setNewPlayerUsername] = React.useState("")
 
     const handleStart = React.useCallback(async () => {
         const toaster = await getToaster();
@@ -64,7 +64,7 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
 
 		toaster.show({intent: "success", message: "Player added" });
         queryClient.invalidateQueries({ queryKey: ['users'] })
-        setNewPlayerUsername(undefined);
+        setNewPlayerUsername("");
         setIsAddPlayerDialogOpen(false);
     }, [newPlayerUsername, password, setNewPlayerUsername, setIsAddPlayerDialogOpen, queryClient]);
 
@@ -105,7 +105,7 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
                 <DialogBody className={styles.addPlayerBody}>
                     Please be careful here and don't add the same person twice with different usernames. One day this username will be your login.
                     <InputGroup type="text" value={newPlayerUsername} onValueChange={setNewPlayerUsername}/>
-                    <Button text="Add Player" onClick={handleAddPlayer} intent="success" fill={true} large={true} disabled={newPlayerUsername == null}/>
+                    <Button text="Add Player" onClick={handleAddPlayer} intent="success" fill={true} large={true} disabled={newPlayerUsername === ""}/>
                 </DialogBody>
             </Dialog>
         </div>
