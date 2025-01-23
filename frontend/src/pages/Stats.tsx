@@ -10,7 +10,7 @@ export const Stats: React.FC<StatsProps> = ({ password }) => {
 
     return isLoading || rawAverages == null
             ? <Spinner />
-            : <div>{rawAverages.map(rawAverage => <AverageTag rawAverage={rawAverage} />)}</div>
+            : <div>{rawAverages.map(rawAverage => <AverageTag rawAverage={rawAverage} key={rawAverage.user} />)}</div>
 }
 
 interface AverageTagProps {
