@@ -60,20 +60,28 @@
 .controls {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(30, 1fr);
     grid-gap: 6px;
     background-color: grey;
     padding: 6px;
     margin: auto 0;
 }
-
-.controls > :nth-child(n + 25) {
-    grid-column: span 2;
+.controls > :nth-child(n) {
+    grid-column: span 15;
   }
 
-.controls > :nth-child(n + 31) {
+.controls > :nth-child(n + 3) {
     grid-column: span 6;
   }
+
+.controls > :nth-child(n + 23) {
+    grid-column:  span 10;
+  }
+
+.controls > :nth-child(n + 30) {
+    grid-column:  span 20;
+  }
+
 
 @media (max-width: 768px) {
     .controls {
