@@ -253,12 +253,12 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
                     disabled={selectedModifier != null && selectedModifier !== Modifier.double}/>
                 <Button
                     key={23}
-                    text={"2x"}
+                    text={"Double"}
                     onClick={createHandleModifierSelected(Modifier.double)}
                     intent="success"
                     disabled={selectedModifier != null && selectedModifier !== Modifier.double}
                 />
-                <Button key={24} text={"3x"} onClick={createHandleModifierSelected(Modifier.treble)}
+                <Button key={24} text={"Treble"} onClick={createHandleModifierSelected(Modifier.treble)}
                         intent="success" disabled={selectedModifier != null && selectedModifier !== Modifier.treble} />
                 <Button key={25} text={"Dartboard-0"} onClick={createHandleNewThrow(0, Modifier.dartboard)} intent="warning" disabled={selectedModifier != null} />
                 <Button key={26} text={"Blackboard-0"} onClick={createHandleNewThrow(0, Modifier.blackboard)} intent="warning" disabled={selectedModifier != null} />
