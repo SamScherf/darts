@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { post } from 'src/util/backend';
+import { getRawAverages } from 'src/util/backend';
 import { getToaster } from 'src/util/toaster';
 
 export type Average = {
@@ -12,7 +12,7 @@ export const useRawAverages = (password: string) => useQuery({
     queryFn: async () => {
         const toaster = await getToaster();
         try {
-			return await post<Average[]>("/get-raw-averages", {password})
+			return await getRawAverages(password)
 		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;

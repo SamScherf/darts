@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { post } from 'src/util/backend';
+import { listUsers } from 'src/util/backend';
 import { getToaster } from 'src/util/toaster';
 
 export type User = {
@@ -11,7 +11,7 @@ export const useUsers = (password: string) => useQuery({
     queryFn: async () => {
         const toaster = await getToaster();
         try {
-			return await post<User[]>("/users", {password})
+			return await listUsers(password)
 		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;
