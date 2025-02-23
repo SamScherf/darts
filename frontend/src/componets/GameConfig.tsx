@@ -4,7 +4,7 @@ import { getToaster } from '../util/toaster';
 import styles from './GameConfig.module.css'
 import { User, useUsers } from 'src/hooks/useUsers';
 import { ItemRenderer, Select } from '@blueprintjs/select';
-import { post } from 'src/util/backend';
+import { createUser } from 'src/util/backend';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface GameConfigProps {
@@ -45,7 +45,7 @@ export const GameConfig: React.FC<GameConfigProps> = ({ startGame, onSavePlayerO
     const handleAddPlayer = React.useCallback(async () => {
 		const toaster = await getToaster();
 		try {
-			await post("/create-user", {password, username: newPlayerUsername})
+            await createUser(newPlayerUsername, password)
 		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;

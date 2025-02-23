@@ -3,9 +3,9 @@ import React from 'react';
 import { Modifier, Throw } from '../util/Throw';
 import styles from './DartGameTracker.module.css'
 import { useNavigate } from 'react-router-dom';
-import { post } from 'src/util/backend';
 import { getToaster } from 'src/util/toaster';
 import { useQueryClient } from '@tanstack/react-query';
+import { addGame } from 'src/util/backend';
 
 const STARTING_SCORE = 501;
 
@@ -151,7 +151,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
     const handleSaveGame = React.useCallback(async () => {
 		const toaster = await getToaster();
 		try {
-			await post("/add-game", {password, throws})
+            addGame(throws, password);
 		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;
