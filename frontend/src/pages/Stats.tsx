@@ -8,7 +8,6 @@ interface StatsProps {
 export const Stats: React.FC<StatsProps> = ({ password }) => {
     const {isLoading, data: rawAverages} = useRawAverages(password);
 
-    debugger;
     return isLoading || rawAverages == null
             ? <Spinner />
             : <div>{rawAverages.map(rawAverage => <AverageTag rawAverage={rawAverage} />)}</div>

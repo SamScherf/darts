@@ -151,7 +151,7 @@ export const DartGameTracker: React.FC<DartGameTrackerProps> = ({playerOne, play
     const handleSaveGame = React.useCallback(async () => {
 		const toaster = await getToaster();
 		try {
-            addGame(throws, password);
+            await addGame(throws, password);
 		} catch(e: any) {
 			if (e.response) {
 				const statusCode = e.response.status;
